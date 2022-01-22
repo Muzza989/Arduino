@@ -1,17 +1,19 @@
-// LARGE CRAWLER TEST MINI JOYSTICK ONLY
-// This one almost works correctly. 
-// Black wire to motor driver GND hooked up to breadboard GND & looped to EN on motor driver.
+// LARGE CRAWLER TEST BATTERIES FITTED & TEST PANEL
+// This one is an attempt to stop motor trip,
+// GND looped to EN on motor controller and black wire fitted to EN.
 
 // Motor A (Left Motor)
+int GNDA = 7; // Motor controller EN (Black wire)
 int SVA = 9; // Motor controller SV (white wire)
 int FRA = 8; // Motor controller F/R (red wire)
 
 // Motor B (Right Motor)
+int GNDB = 5; // Motor controller EN (Black wire)
 int SVB = 3; // Motor controller SV (white wire)
 int FRB = 4; // Motor controller F/R (red wire)
 
 // Joystick Input
-int joyVert = A0; // Vertical  
+int joyVert = A0; // Vertical
 int joyHorz = A1; // Horizontal
 
 // Motor Speed Value - Start at zero
@@ -24,12 +26,17 @@ int joyposHorz = 512;
 void setup()
 {
   // Set all the motor control pins to outputs
-  pinMode(SVA, OUTPUT); // Motor controller A SV (white wire)
-  pinMode(SVB, OUTPUT); // Motor controller B SV (white wire)
-  pinMode(FRA, OUTPUT); // Motor controller A F/R (red wire)
-  pinMode(FRB, OUTPUT); // Motor controller B F/R (red wire) 
- 
- // Start with motors enabled and direction forward 
+  pinMode(GNDA, OUTPUT); // Motor controller A GND (Left Motor - Black wire)
+  pinMode(GNDB, OUTPUT); // Motor controller B GND (Right Motor - Black wire)
+  pinMode(SVA, OUTPUT); // Motor controller A SV (Left Motor - white wire)
+  pinMode(SVB, OUTPUT); // Motor controller B SV (Right Motor - white wire)
+  pinMode(FRA, OUTPUT); // Motor controller A F/R (Left Motor - red wire)
+  pinMode(FRB, OUTPUT); // Motor controller B F/R (Right Motor - red wire)
+
+ // Start with motors enabled and direction forward
+ // Switch on both motor controllers
+  digitalWrite(GNDA, LOW);
+  digitalWrite(GNDB, LOW);
   // Motor A (Left Motor)
   digitalWrite(FRA, LOW);
   // Motor B (Right Motor)
@@ -42,30 +49,36 @@ void loop() {
   joyposVert = analogRead(joyVert);
   // Determine if this is a forward or backward motion & Apply results to MotorSpeed
 
-  if (joyposVert < 460) // This is Backward
+  if (joyposVert > 564) // This is Backward
   {
+    // Switch on both Motor Controllers
+    digitalWrite(GNDA, LOW);
+    digitalWrite(GNDB, LOW);
     // Set Motor A (Left Motor) backward
     digitalWrite(FRA, HIGH); // Motor controller A F/R (red wire)
     // Set Motor B (Right Motor) backward
     digitalWrite(FRB, HIGH); // Motor controller B F/R (red wire)
 
     //Determine Motor Speeds
-    MotorSpeed = map(joyposVert, 460, 0, 0, 255);
-    // Send the motor speed to both motor controllers. 
+    MotorSpeed = map(joyposVert, 564, 1023, 0, 255);
+    // Send the motor speed to both motor controllers.
     analogWrite(SVA, MotorSpeed);
     analogWrite(SVB, MotorSpeed);
   }
-  else if (joyposVert > 564)
+  else if (joyposVert < 460)
   {
     // This is Forward
+    // Switch on both Motor Controllers
+    digitalWrite(GNDA, LOW);
+    digitalWrite(GNDB, LOW);
     // Set Motor A (Left Motor) forward
     digitalWrite(FRA, LOW);
     // Set Motor B (Right Motor) forward
     digitalWrite(FRB, LOW);
 
     //Determine Motor Speed
-    MotorSpeed = map(joyposVert, 550, 1023, 0, 255);
-    // Send the motor speed to both motor controllers.  
+    MotorSpeed = map(joyposVert, 460, 0, 0, 255);
+    // Send the motor speed to both motor controllers.
     analogWrite(SVA, MotorSpeed);
     analogWrite(SVB, MotorSpeed);
   }
@@ -77,21 +90,27 @@ void loop() {
   if (joyposHorz < 460)
   {
     // Move Left
+    // Switch on both Motor Controllers
+    digitalWrite(GNDA, LOW);
+    digitalWrite(GNDB, LOW);
     // Set Motor A (Left Motor) BACKWARD
-    digitalWrite(FRA, HIGH);  
+    digitalWrite(FRA, HIGH);
     // Set Motor B (Right Motor) FORWARD
     digitalWrite(FRB, LOW);
 
-    //Determine Motorspeed  
+    //Determine Motorspeed
     MotorSpeed = map(joyposHorz, 460, 0, 0, 255);
 
-    // Send the motor speed to both motor controllers.  
+    // Send the motor speed to both motor controllers.
     analogWrite(SVA, MotorSpeed);
     analogWrite(SVB, MotorSpeed);
   }
   else if (joyposHorz > 564)
   {
     // Move Right
+    // Switch on both Motor Controllers
+    digitalWrite(GNDA, LOW);
+    digitalWrite(GNDB, LOW);
      // Set Motor A (Left Motor) forward
     digitalWrite(FRA, LOW);
     // Set Motor B (Right Motor) forward
@@ -99,7 +118,7 @@ void loop() {
     // Determine Motor speed
     MotorSpeed = map(joyposHorz, 550, 1023, 0, 255);
 
-    // Send the motor speed to both motor controllers.  
+    // Send the motor speed to both motor controllers.
     analogWrite(SVA, MotorSpeed);
     analogWrite(SVB, MotorSpeed);
   }
